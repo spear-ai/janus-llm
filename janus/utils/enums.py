@@ -474,6 +474,12 @@ LANGUAGES: Dict[str, Dict[str, str]] = {
         "url": "https://github.com/tree-sitter/tree-sitter-php",
         "example": "<?php\n// Hello, World!\necho 'Hello, World!';\n",
     },
+    "plantuml": {
+        "comment": "'",
+        "suffix": "puml",
+        "url": "",
+        "example": '@startuml\nclass Animal <<GENERAL>>\n@enduml\n',
+    },
     "pod": {
         "comment": "=",
         "suffix": "pod",
