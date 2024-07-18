@@ -61,6 +61,7 @@ poetry install
 ```
 
 ### PlantUML example
+
 Files of a single type can be "translated" to PlantUML diagrams. See the following example:
 
 ```shell
