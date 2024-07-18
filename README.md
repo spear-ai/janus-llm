@@ -60,6 +60,16 @@ export PATH=$PATH:$HOME/.local/bin
 poetry install
 ```
 
+### PlantUML example
+
+Files of a single type can be "translated" to PlantUML diagrams. See the following example:
+
+```shell
+janus translate --input-dir INPUT_DIR --output-dir OUTPUT_DIR --source-lang SOURCE_LANG --target-lang plantuml --prompt-template janus-llm/janus/prompts/templates/uml-diagram/
+```
+
+Please note that using plantuml as an input language in regular translation is very likely broken.
+
 ### Contributing
 
 See our [contributing pages](https://janus-llm.github.io/janus-llm/contributing.html)

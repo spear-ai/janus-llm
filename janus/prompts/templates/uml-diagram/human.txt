@@ -1,0 +1,25 @@
+Generate PlantUML code from the provided source code, considering:
+
+Class and method identification
+Visibility and access modifiers
+Inheritance, composition, and aggregation
+Associations and dependencies
+UML notation and conventions
+
+Adhere to PlantUML syntax and best practices. Provide the generated code and any necessary explanations or comments.
+
+If the given code is incomplete, assume it is translated elsewhere.
+If the given code is missing variable definitions, assume they are assigned elsewhere.
+If there are incomplete statements that haven't been closed out, assume they are closed out in other translations.
+If the code has comments, keep ALL of them.
+If it only consists of ONLY comments, assume the code that is represented by those comments is translated elsewhere.
+
+Some more things to remember:
+(1) follow standard styling practice for PlantUML
+(2) make sure the language is typed correctly
+(3) make sure to put the resultant code within triple backticks
+
+```
+{SOURCE_CODE}
+```
+
