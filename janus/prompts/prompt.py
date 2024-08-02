@@ -84,7 +84,7 @@ class PromptEngine:
         if variables_path.exists():
             self.variables.update(json.loads(variables_path.read_text()))
 
-    def create(self, code: CodeBlock) -> List[BaseMessage]:
+    def create(self, code: CodeBlock, context : str = '') -> List[BaseMessage]:
         """Convert a code block to a Chat GPT prompt.
 
         Arguments:
@@ -95,6 +95,7 @@ class PromptEngine:
         """
         return self.prompt.format_prompt(
             SOURCE_CODE=code.text,
+            CONTEXT=context,
             **self.variables,
         ).to_messages()
 
