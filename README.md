@@ -70,6 +70,29 @@ janus translate --input-dir INPUT_DIR --output-dir OUTPUT_DIR --source-lang SOUR
 
 Please note that using plantuml as an input language in regular translation is very likely broken.
 
+### RAG
+
+Retrieval Augmented Generation is a framework that combines chunks of "context" from a database into a prompting scheme to provide more information to a generative model at inference time. This fork supports RAG by adding the in-collection and n-db-results parameters at translation time.
+
+After database initialization, a collection must first be created and embedded by running the appropriate janus db commands. For example, to add a collection of cpp files within the start/ directory, a user might run:
+
+```shell
+janus db add collection-cpp --input-lang cpp --input-dir start/
+```
+
+Then, that user might craft a prompting scheme that includes {CONTEXT}. This will be replaced by the top integer number of n-db-results of context from that collection at inference time. An example can be found at ./prompts/templates/simple-rag/
+
+That user might finally pass the collection and their prompting scheme into the model during translation:
+
+```shell
+janus translate --input-dir start --source-lang cpp --output-dir finish-with-retrieval --in-collection collection-cpp --target-lang python --llm-name LLM_NAME --prompt-template ~/forked/janus-llm/janus/prompts/templates/simple-rag/ -n 2
+```
+
+Users can also perform a translation, build a collection out of the result, and ask the model to iterate on its first attempt. The creative application of context can have a big impact on the end result.  
+
+Collection input types do not have to match, so a collection can be built out of one language and used for translation of another.
+
+
 ### Contributing
 
 See our [contributing pages](https://janus-llm.github.io/janus-llm/contributing.html)

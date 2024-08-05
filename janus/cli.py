@@ -135,15 +135,34 @@ def translate(
             help="The type of parser to use.",
         ),
     ] = "code",
-    collection: Annotated[
+    output_collection: Annotated[
         str,
         typer.Option(
             "--collection",
             "-c",
+            "--out-collection",
+            "-oc",
             help="If set, will put the translated result into a Chroma DB "
             "collection with the name provided.",
         ),
     ] = None,
+    input_collection: Annotated[
+        str,
+        typer.Option(
+            "--in-collection",
+            "-ic",
+            help="If set, will put the retreived context from this Chroma DB "
+            "collection into the {CONTEXT} within the prompt.",
+        ),
+    ] = None,
+    n_db_results: Annotated[
+        int,
+        typer.Option(
+            "--n-db-results",
+            "-n",
+            help="The number of relevant results retrieved from the input collection. "
+        ),
+    ] = 4,
 ):
     try:
         target_language, target_version = target_lang.split("-")
@@ -167,7 +186,7 @@ def translate(
         parser_type=parser_type,
         db_path=db_loc,
     )
-    translator.translate(input_dir, output_dir, overwrite, collection)
+    translator.translate(input_dir, output_dir, overwrite, output_collection, input_collection, n_db_results)
 
 
 @db.command("init", help="Connect to or create a database.")

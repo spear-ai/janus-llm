@@ -5,11 +5,13 @@ import openai.error
 from langchain.callbacks import get_openai_callback
 
 from .converter import Converter, run_if_changed
+from .embedding.database import ChromaEmbeddingDatabase
 from .embedding.vectorize import ChromaDBVectorizer
 from .language.block import CodeBlock, TranslatedCodeBlock
 from .llm import load_model
 from .parsers.code_parser import PARSER_TYPES, CodeParser, EvaluationParser, JanusParser
 from .prompts.prompt import SAME_OUTPUT, TEXT_OUTPUT, PromptEngine
+from .retrieval.retriever import Retriever
 from .utils.enums import LANGUAGES
 from .utils.logger import create_logger
 
@@ -67,6 +69,7 @@ class Translator(Converter):
             target_version=target_version,
         )
         self.set_db_path(db_path=db_path)
+        self.set_db_client(db_path=db_path)
 
         self._load_parameters()
 
@@ -84,7 +87,9 @@ class Translator(Converter):
         input_directory: str | Path,
         output_directory: str | Path | None = None,
         overwrite: bool = False,
-        collection_name: str | None = None,
+        output_collection: str | None = None,
+        input_collection: str | None = None,
+        n_db_results: int = 4
     ) -> None:
         """Translate code in the input directory from the source language to the target
         language, and write the resulting files to the output directory.
@@ -95,6 +100,12 @@ class Translator(Converter):
             overwrite: Whether to overwrite existing files (vs skip them)
             collection_name: Collection to add to
         """
+
+        # Init for retriever during translation
+        self._in_collection_name = input_collection
+        self._n_db_results = n_db_results
+
+
         # Convert paths to pathlib Paths if needed
         if isinstance(input_directory, str):
             input_directory = Path(input_directory)
@@ -174,10 +185,10 @@ class Translator(Converter):
             #
             # self._embed_nodes_recursively(out_block, embedding_type, filename)
 
-            if collection_name is not None:
+            if output_collection is not None:
                 self._vectorizer.add_nodes_recursively(
                     out_block,
-                    collection_name,
+                    output_collection,
                     in_path.name,
                 )
                 # out_text = self.parser.parse_combined_output(out_block.complete_text)
@@ -308,9 +319,17 @@ class Translator(Converter):
             block.translated = True
             return
 
+
+        # Use Retriever to get context if an input collection is passed
+        source_code_context = ""
+        if self._in_collection_name is not None:
+            self._retriever = Retriever(client = self._client, collection_name=self._in_collection_name)
+            source_code_context = self._retriever.retrieve(block.original.text, self._n_db_results)
+
+
         log.debug(f"[{block.name}] Translating...")
         log.debug(f"[{block.name}] Input text:\n{block.original.text}")
-        prompt = self._prompt_engine.create(block.original)
+        prompt = self._prompt_engine.create(block.original, source_code_context)
         top_score = -1.0
 
         if self._llm is None:
@@ -426,6 +445,10 @@ class Translator(Converter):
 
     def set_db_path(self, db_path: str) -> None:
         self._db_path = db_path
+
+    def set_db_client(self, db_path: str) -> None:
+        self._client = ChromaEmbeddingDatabase(self._db_path)
+
 
     @run_if_changed("_model_name", "_custom_model_arguments")
     def _load_model(self):
