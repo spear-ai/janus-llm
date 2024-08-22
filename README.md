@@ -92,6 +92,24 @@ Users can also perform a translation, build a collection out of the result, and 
 
 Collection input types do not have to match, so a collection can be built out of one language and used for translation of another.
 
+### Pipelines
+
+Sometimes a user might want to run a succession of janus-related commands in a row. These can be handled with pipelines.
+
+Within /scripts/pipelines/ exists our example script, header_machine. This Pipeline exists to copy, translate, and use header files in context during cpp-to-python translation. When it acts successfully, it may serve to selectively integrate header content into translations that otherwise might be missing it.
+
+This script requires that the template directory has proper formatted simple/ and simple-rag-headers/ prompt directories within it. Like any other script, a user may have to add permissions to it (such as with chmod) in order to run. 
+
+Here is some example usage:
+
+```shell
+./header_machine.sh -i INPUT_DIR -t PATH_TO/janus-llm/janus/prompts/templates -o OUTPUT_DIR
+```
+
+A user can use the -h flag to get help, and the -k flag to keep intermediate products (inlcuding translated header files).
+
+Intermediate products are stored in a uuid directory. These will be unique to prevent overwriting between runs.
+
 
 ### Contributing
 
