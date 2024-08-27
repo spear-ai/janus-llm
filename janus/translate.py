@@ -1,6 +1,7 @@
 from pathlib import Path
 from typing import Any, Dict
 
+import os
 import openai.error
 from langchain.callbacks import get_openai_callback
 
@@ -89,7 +90,8 @@ class Translator(Converter):
         overwrite: bool = False,
         output_collection: str | None = None,
         input_collection: str | None = None,
-        n_db_results: int = 4
+        n_db_results: int = 4,
+        keep_input_suffix = True
     ) -> None:
         """Translate code in the input directory from the source language to the target
         language, and write the resulting files to the output directory.
@@ -131,9 +133,12 @@ class Translator(Converter):
             f"{len(list(input_directory.iterdir())) - len(input_paths)}\n"
         )
         if output_directory is not None:
+            new_suffix = f".{target_suffix}"
+                
             output_paths = [
                 output_directory
-                / p.relative_to(input_directory).with_suffix(f".{target_suffix}")
+                / Path(os.path.join(p.relative_to(input_directory).parent, f'{p.relative_to(input_directory).stem}{"_" + source_suffix if keep_input_suffix else ""}{new_suffix}'))
+                
                 for p in input_paths
             ]
             in_out_pairs = list(zip(input_paths, output_paths))
@@ -147,6 +152,7 @@ class Translator(Converter):
                     f"'*.{source_suffix}' files"
                 )
         else:
+            print('uh oh)')
             in_out_pairs = [(f, None) for f in input_paths]
         log.info(f"Translating {len(in_out_pairs)} '*.{source_suffix}' files")
 

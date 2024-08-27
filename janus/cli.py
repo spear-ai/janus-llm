@@ -163,6 +163,14 @@ def translate(
             help="The number of relevant results retrieved from the input collection. "
         ),
     ] = 4,
+    keep_input_suffix: Annotated[
+        bool,
+        typer.Option(
+            "--keep-input-suffix",
+            "-kis",
+            help="Adds input suffix to the translated file name as file_old_suffix.new_extension . Useful if files have identical names except for their extensions."
+        ),
+    ] = False,
 ):
     try:
         target_language, target_version = target_lang.split("-")
@@ -186,7 +194,7 @@ def translate(
         parser_type=parser_type,
         db_path=db_loc,
     )
-    translator.translate(input_dir, output_dir, overwrite, output_collection, input_collection, n_db_results)
+    translator.translate(input_dir, output_dir, overwrite, output_collection, input_collection, n_db_results, keep_input_suffix)
 
 
 @db.command("init", help="Connect to or create a database.")
