@@ -253,6 +253,15 @@ LANGUAGES: Dict[str, Dict[str, str]] = {
         "url": "https://github.com/bkegley/tree-sitter-graphql",
         "example": "query {\n  hello\n}\n",
     },
+    "h": {
+        "comment": "//",
+        "suffix": "h",
+        "url": "https://github.com/tree-sitter/tree-sitter-cpp",
+        "example": (
+            '#include <stdio.h>\n\nint main() {\n    printf("Hello, World!\\n");\n'
+            "    return 0;\n}\n"
+        ),
+    },
     "hack": {
         "comment": "//",
         "suffix": "hack",
@@ -477,7 +486,7 @@ LANGUAGES: Dict[str, Dict[str, str]] = {
     "plantuml": {
         "comment": "'",
         "suffix": "puml",
-        "url": "",
+        "url": "https://github.com/lyndsysimon/tree-sitter-plantuml.git",
         "example": '@startuml\nclass Animal <<GENERAL>>\n@enduml\n',
     },
     "pod": {
